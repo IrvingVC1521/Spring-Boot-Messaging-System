@@ -2,6 +2,7 @@ package com.sistema.chat.Controllers;
 
 
 import com.sistema.chat.Modulo.ChatMessage;
+import com.sistema.chat.Service.ChatMessageService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -12,11 +13,17 @@ import java.util.Objects;
 @Controller
 public class ChatController {
 
+    private final ChatMessageService  chatMessageServicee;
+
+    public ChatController(ChatMessageService chatMessageServicee) {
+        this.chatMessageServicee = chatMessageServicee;
+    }
+
     @MessageMapping("/sendMessage")
     //con esto enviamos el mensaje a esa sesión
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage){
-        return chatMessage;
+        return chatMessageServicee.EliminarMalasPalabras(chatMessage);
     }
 
     @MessageMapping("/addUser")
