@@ -2,17 +2,52 @@ package com.sistema.chat.Service;
 
 
 import com.sistema.chat.Modulo.ChatMessage;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 @Service
 public class ChatMessageService {
-    List<String> malasPalabras = List.of("PENDEJO", "PENDEJA", "CABRÓN","CABRON", "CABRONA", "CULERO", "CULERA", "CHINGAR", "CHINGADA", "CHINGADO", "CHINGAS",
+
+    static final List<String> malasPalabras = List.of("PENDEJO", "PENDEJA", "CABRÓN","CABRON", "CABRONA", "CULERO", "CULERA", "CHINGAR", "CHINGADA", "CHINGADO", "CHINGAS",
             "CHINGUEN", "PINCHE", "VERGA", "V3RGA", "VETE A LA VERGA", "A LA VERGA","IMBECIL","MAMÓN", "MAMONA", "PUTO", "PUTA", "HIJO DE PUTA", "HIJA DE PUTA", "PUTA MADRE",
             "PTM", "CHINGA TU MADRE", "CTM", "HIJO DE TU PUTA MADRE", "PUTIZA", "PUTAZO", "CULO", "OJETE", "OJETES", "MIERDA", "MIERDERO", "JOTO", "MARICÓN", "MARICON",
             "SARRA", "NACO", "GATA", "PERRA", "PENDEJADA", "CHINGADERA", "CULIADA", "PUÑETAS", "PUÑETÓN", "MAMADAS", "ME VALE VERGA", "VALES VERGA", "VALE VERGA", "VETE ALV",
             "ALV", "HDP", "HJDTPM","PUTITO","GAY", "VICTOR");
+
+    ConcurrentHashMap<String, Integer> salas = new ConcurrentHashMap<>();
+    public void agregarSala(String nombreSala) {
+        if(!nombreSala.isEmpty() && !salas.containsKey(nombreSala)){
+            salas.put(nombreSala,0);
+        }
+        else throw new IllegalArgumentException("El nombre de la sala no puede estar vacio");
+    }
+
+    public void unirseASala(String sala){
+        if(salas.containsKey(sala)){
+            salas.put(sala, salas.getOrDefault(sala, 0) + 1);
+        }
+        else throw new IllegalArgumentException("Sala no encontrada");
+    }
+
+    public Set<String> getSalas(){
+        return salas.keySet();
+    }
+
+
+
+    public void salirDeSala(String sala){
+        if(salas.containsKey(sala)){
+            salas.put(sala, salas.get(sala) - 1);
+            if(salas.get(sala) == 0){
+                salas.remove(sala);
+            }
+        }
+        else throw new IllegalArgumentException("No se encontró la sala");
+    }
 
 
 
@@ -32,4 +67,6 @@ public class ChatMessageService {
         chatMessage.setContent(contenido);
         return chatMessage;
     }
+
+
 }

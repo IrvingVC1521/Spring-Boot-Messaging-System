@@ -3,14 +3,18 @@ package com.sistema.chat.Controllers;
 
 import com.sistema.chat.Modulo.ChatMessage;
 import com.sistema.chat.Service.ChatMessageService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
-@Controller
+
+
+@RestController
 public class ChatController {
 
     private final ChatMessageService  chatMessageServicee;
@@ -26,6 +30,17 @@ public class ChatController {
         return chatMessageServicee.EliminarMalasPalabras(chatMessage);
     }
 
+    @PostMapping("/AgregarSala")
+    public ResponseEntity<?> agregarSala(@RequestParam String nombreSala){
+        chatMessageServicee.agregarSala(nombreSala);
+        return new ResponseEntity<>("Se ha creado la sala",HttpStatus.CREATED);
+    }
+
+    @GetMapping("/ObtenerSalas")
+    public ResponseEntity<?> obtenerSalas(){
+        return ResponseEntity.ok().body(chatMessageServicee.getSalas());
+    }
+
     @MessageMapping("/addUser")
     @SendTo("/topic/public")
     //Recordamos que SimpMessage guarda los metadatos del usuario
@@ -38,4 +53,22 @@ public class ChatController {
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username",chatMessage.getSender());
         return chatMessage;
     }
+
+    @MessageMapping("/entrarASala")
+    @SendTo("/topic/public")
+    public ChatMessage ObtenerSalaUsuario(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        var atributos = headerAccessor.getSessionAttributes();
+
+        if (atributos != null) {
+            String salaVieja = (String) atributos.get("sala");
+            if (salaVieja != null) {
+                chatMessageServicee.salirDeSala(salaVieja);
+            }
+            atributos.put("sala", chatMessage.getRoom());
+            chatMessageServicee.unirseASala(chatMessage.getRoom());
+        }
+
+        return chatMessage;
+    }
+
 }

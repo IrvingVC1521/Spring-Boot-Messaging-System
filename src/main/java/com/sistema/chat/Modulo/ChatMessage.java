@@ -12,6 +12,7 @@ public class ChatMessage {
     private MessageType type;
     private String content;
     private String sender; //remitente
+    private String room;
 
 }
 
@@ -23,6 +24,6 @@ public class ChatMessage {
 * ChatMessage message = ChatMessage.builder()
         .type(MessageType.CHAT)
         .content("Hola")
-        .sender("Irvin")
+        .sender("Pedrito")
         .build(); // <- ¡Cierra y fabrica el objeto!
 */
