@@ -33,8 +33,15 @@ public class ChatController {
 
     @PostMapping("/AgregarSala")
     public ResponseEntity<?> agregarSala(@RequestParam String nombreSala){
-        chatMessageServicee.agregarSala(nombreSala);
-        return new ResponseEntity<>("Se ha creado la sala",HttpStatus.CREATED);
+        if(chatMessageServicee.agregarSala(nombreSala)) {
+            log.info("Sala agregada exitosamente");
+            return new ResponseEntity<>("Se ha creado la sala",HttpStatus.CREATED);
+        }
+        else{
+            log.warn("La sala ya existe");
+            return new ResponseEntity<>("La sala ya existe",HttpStatus.CONFLICT);
+        }
+
     }
 
     @GetMapping("/ObtenerSalas")
@@ -52,14 +59,15 @@ public class ChatController {
         //Con esto guardamos los datos del usuario, el .put agrega el usuario a un map, "username" es la key
         //y  lo otro es el valor
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username",chatMessage.getSender());
+        log.info("Usuario agregado a la sesión: {}", chatMessage.getSender());
         return chatMessage;
     }
 
     @MessageMapping("/entrarASala")
     @SendTo("/topic/public")
     public ChatMessage ObtenerSalaUsuario(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        //Obtenemos los atributos de la sesion
         var atributos = headerAccessor.getSessionAttributes();
-
         if (atributos != null) {
             String salaVieja = (String) atributos.get("sala");
             if (salaVieja != null) {

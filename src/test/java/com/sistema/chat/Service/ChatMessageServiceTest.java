@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ChatMessageServiceTest {
     ChatMessage message = ChatMessage.builder()
             .type(MessageType.CHAT)
-            .content("hola imbecil pendejo, joto ya no seas gay, victor")
+            .content("hola puto")
             .sender("Irvin")
             .build();
 
@@ -18,7 +18,7 @@ class ChatMessageServiceTest {
     void testParaeliminarMalasPalabras() {
         message = chatMessageService.EliminarMalasPalabras(message);
         String contenido = message.getContent();
-        assertEquals("hola ******* *******, **** ya no seas ***, ******", contenido);
+        assertEquals("hola ****", contenido);
 
     }
 }

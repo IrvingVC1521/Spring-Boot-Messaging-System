@@ -16,21 +16,25 @@ public class ChatMessageService {
             "CHINGUEN", "PINCHE", "VERGA", "V3RGA", "VETE A LA VERGA", "A LA VERGA","IMBECIL","MAMÓN", "MAMONA", "PUTO", "PUTA", "HIJO DE PUTA", "HIJA DE PUTA", "PUTA MADRE",
             "PTM", "CHINGA TU MADRE", "CTM", "HIJO DE TU PUTA MADRE", "PUTIZA", "PUTAZO", "CULO", "OJETE", "OJETES", "MIERDA", "MIERDERO", "JOTO", "MARICÓN", "MARICON",
             "SARRA", "NACO", "GATA", "PERRA", "PENDEJADA", "CHINGADERA", "CULIADA", "PUÑETAS", "PUÑETÓN", "MAMADAS", "ME VALE VERGA", "VALES VERGA", "VALE VERGA", "VETE ALV",
-            "ALV", "HDP", "HJDTPM","PUTITO","GAY", "VICTOR");
+            "ALV", "HDP", "HJDTPM","PUTITO","GAY", "VICTOR","PENE","PNDJ","PNDJO");
 
     ConcurrentHashMap<String, Integer> salas = new ConcurrentHashMap<>();
-    public void agregarSala(String nombreSala) {
-        if(!nombreSala.isEmpty() && !salas.containsKey(nombreSala)){
-            salas.put(nombreSala,0);
+
+    public boolean agregarSala(String nombreSala) {
+        if (nombreSala != null && !nombreSala.trim().isEmpty()) {
+            // Se usa putIfAbsent para verificar y agregar en una sola operación indivisible
+            // Retorna true solo si la clave no existía
+            return salas.putIfAbsent(nombreSala.trim(), 0) == null;
         }
-        else throw new IllegalArgumentException("El nombre de la sala no puede estar vacio");
+        return false;
     }
 
-    public void unirseASala(String sala){
-        if(salas.containsKey(sala)){
-            salas.put(sala, salas.getOrDefault(sala, 0) + 1);
+    public void unirseASala(String sala) {
+        if (sala != null) {
+            //Con computeIfPresent nos aseguramos de que no haya conflictos al unirse a la sala
+            //Esta hecho para mantener atomicidad, evita el problema de concurrencia entre hilos
+            salas.computeIfPresent(sala, (nombreDeSala, contadorActual) -> contadorActual + 1);
         }
-        else throw new IllegalArgumentException("Sala no encontrada");
     }
 
     public Set<String> getSalas(){
@@ -39,14 +43,13 @@ public class ChatMessageService {
 
 
 
-    public void salirDeSala(String sala){
-        if (salas.containsKey(sala)) {
-            int conteo = salas.get(sala) - 1;
-            if (conteo <= 0) {
-                salas.remove(sala);
-            } else {
-                salas.put(sala, conteo);
-            }
+    public void salirDeSala(String sala) {
+        if (sala != null) {
+            // Disminuye el conteo de forma atómica. Si llega a 0 o menos, elimina la clave retornando null.
+            salas.computeIfPresent(sala, (k, conteoActual) -> {
+                int nuevoConteo = conteoActual - 1;
+                return (nuevoConteo <= 0) ? null : nuevoConteo;
+            });
         }
     }
 

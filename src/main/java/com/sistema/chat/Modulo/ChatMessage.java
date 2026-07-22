@@ -15,15 +15,3 @@ public class ChatMessage {
     private String room;
 
 }
-
-//Ejemplo para crear una instancia sin meter a @Builder:
-//ChatMessage message = new ChatMessage(MessageType.CHAT, "Hola", "Irvin");
-
-//con @Builder:
-/*
-* ChatMessage message = ChatMessage.builder()
-        .type(MessageType.CHAT)
-        .content("Hola")
-        .sender("Pedrito")
-        .build(); // <- ¡Cierra y fabrica el objeto!
-*/

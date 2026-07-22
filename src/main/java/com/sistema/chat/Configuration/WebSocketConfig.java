@@ -20,7 +20,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry){
-       String vari = "prueba";
        registry.setApplicationDestinationPrefixes("/app");//con /app lo que hacemos es mandar el  mensaje al programa
         //para que lo pueda procesar, por ejemplo, hacia un metodo que detecta groserias
        registry.enableSimpleBroker("/topic" );//Con esto hacemos que todos los usuaris que
