@@ -40,13 +40,14 @@ public class ChatMessageService {
 
 
     public void salirDeSala(String sala){
-        if(salas.containsKey(sala)){
-            salas.put(sala, salas.get(sala) - 1);
-            if(salas.get(sala) == 0){
+        if (salas.containsKey(sala)) {
+            int conteo = salas.get(sala) - 1;
+            if (conteo <= 0) {
                 salas.remove(sala);
+            } else {
+                salas.put(sala, conteo);
             }
         }
-        else throw new IllegalArgumentException("No se encontró la sala");
     }
 
 

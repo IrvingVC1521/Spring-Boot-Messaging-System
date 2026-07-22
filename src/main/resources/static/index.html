@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" xmlns="http://www.w3.org/1999/html">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spring Boot WebSocket Chat</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
@@ -14,61 +15,32 @@
             --text-color: #f8f8f2;
             --primary-color: #bd93f9;
             --secondary-color: #6272a4;
-            --success-color: #50fa7b;
+            --input-bg: #44475a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 600px;
-            background-color: var(--panel-bg);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 80vh;
-        }
-
-        /* Pantalla de Inicio de Sesión */
-        #login-page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+            min-height: 100vh;
+            /* Grid en vez de flex-row: evita que los hijos colapsen a ancho 0 */
+            display: grid;
+            place-items: center;
             padding: 20px;
         }
 
-        #login-page h2 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-
-        input {
-            width: 80%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            background-color: #44475a;
-            color: white;
-            font-size: 16px;
-            outline: none;
-        }
-
-        input:focus {
-            border: 2px solid var(--primary-color);
+        .hidden {
+            display: none !important;
         }
 
         button {
@@ -78,35 +50,125 @@
             background-color: var(--primary-color);
             color: #282a36;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s;
         }
 
         button:hover {
             background-color: #ff79c6;
         }
 
-        /* Pantalla de Chat */
-        #chat-page {
-            display: none;
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* ---------- Tarjeta genérica (pantallas 1 y 2) ---------- */
+        .card {
+            width: 100%;
+            max-width: 380px;
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            padding: 32px;
+            text-align: center;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .card h3 {
+            color: var(--secondary-color);
+            font-size: 15px;
+            margin: 24px 0 10px;
+        }
+
+        .card .field {
+            margin-bottom: 16px;
+        }
+
+        .card hr {
+            border: none;
+            border-top: 1px solid var(--input-bg);
+            margin: 24px 0 0;
+        }
+
+        /* ---------- Pantalla de Chat ---------- */
+        .chat-card {
+            width: 100%;
+            max-width: 600px;
+            height: 85vh;
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
             flex-direction: column;
-            height: 100%;
         }
 
         .chat-header {
+            flex: 0 0 auto;
             background-color: var(--primary-color);
             color: #282a36;
-            padding: 15px;
-            text-align: center;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
             font-weight: bold;
             font-size: 18px;
         }
 
+        .chat-header #roomTitle {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-leave {
+            flex: 0 0 auto;
+            background-color: #282a36;
+            color: var(--text-color);
+            font-size: 13px;
+            padding: 8px 14px;
+        }
+
+        .btn-leave:hover {
+            background-color: #ff5555;
+            color: #282a36;
+        }
+
         .chat-messages {
-            flex: 1;
-            padding: 20px;
+            flex: 1 1 auto;
+            min-height: 0; /* imprescindible para que el scroll interno funcione dentro de flex */
             overflow-y: auto;
+            padding: 20px;
+            margin: 0;
+            list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -125,10 +187,11 @@
             font-size: 12px;
             padding: 5px 10px;
             border-radius: 12px;
+            max-width: 90%;
         }
 
         .message.chat {
-            background-color: #44475a;
+            background-color: var(--input-bg);
             align-self: flex-start;
         }
 
@@ -145,39 +208,61 @@
             display: block;
         }
 
-        .chat-input-container {
+        .chat-input-area {
+            flex: 0 0 auto;
             display: flex;
+            gap: 10px;
             padding: 15px;
-            background-color: #1e1e2e;
+            background-color: var(--bg-color);
         }
 
-        .chat-input-container input {
+        .chat-input-area input {
             flex: 1;
-            margin-bottom: 0;
-            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-<div class="chat-container">
-    <div id="login-page">
-        <h2>Bienvenido al Servidor</h2>
-        <label for="name"></label><input type="text" id="name" placeholder="Nombre de usuario" autocomplete="off">
-        <button onclick="connect()">Entrar al Chat</button>
-    </div>
 
-    <div id="chat-page">
-        <div class="chat-header">
-            Sala General 🟢
-        </div>
-        <div class="chat-messages" id="message-container">
-        </div>
-        <div class="chat-input-container">
-            <label for="message"></label><input type="text" id="message" placeholder="Escribe un mensaje" autocomplete="off" onkeypress="handleEnter(event)">
-            <button onclick="sendMessage()">Enviar</button>
-        </div>
+<!-- PANTALLA 1: Pedir Nombre -->
+<div id="screen-name" class="card">
+    <h2>Ingresa tu nombre</h2>
+    <div class="field">
+        <input type="text" id="name" placeholder="Tu nombre..." autocomplete="off">
+    </div>
+    <button id="btn-guardar-nombre">Siguiente</button>
+</div>
+
+<!-- PANTALLA 2: Seleccionar / Crear Sala -->
+<div id="screen-rooms" class="card hidden">
+    <h2>Salas disponibles</h2>
+    <div class="field">
+        <select id="roomSelect">
+            <option value="">Selecciona una sala...</option>
+        </select>
+    </div>
+    <button id="btn-entrar-sala">Entrar a la sala</button>
+
+    <hr>
+    <h3>O crea una nueva</h3>
+    <div class="field">
+        <input type="text" id="newRoomInput" placeholder="Nombre de la nueva sala..." autocomplete="off">
+    </div>
+    <button id="btn-crear-sala">Crear sala</button>
+</div>
+
+<!-- PANTALLA 3: Chat -->
+<div id="screen-chat" class="chat-card hidden">
+    <div class="chat-header">
+        <span id="roomTitle">Sala</span>
+        <button id="btn-salir" class="btn-leave">Salir</button>
+    </div>
+    <ul id="messageArea" class="chat-messages"></ul>
+    <div class="chat-input-area">
+        <input type="text" id="message" placeholder="Escribe un mensaje..." autocomplete="off">
+        <button id="btn-enviar">Enviar</button>
     </div>
 </div>
 
 <script src="/js/main.js"></script>
 </body>
+</html>

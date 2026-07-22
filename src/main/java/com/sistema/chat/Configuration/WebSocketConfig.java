@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
        String vari = "prueba";
        registry.setApplicationDestinationPrefixes("/app");//con /app lo que hacemos es mandar el  mensaje al programa
         //para que lo pueda procesar, por ejemplo, hacia un metodo que detecta groserias
-       registry.enableSimpleBroker("/" + vari);//Con esto hacemos que todos los usuaris que
+       registry.enableSimpleBroker("/topic" );//Con esto hacemos que todos los usuaris que
         //esten en la misma sala sean capaces de recibir un mismo mensaje de alguno de ellos
     }
 

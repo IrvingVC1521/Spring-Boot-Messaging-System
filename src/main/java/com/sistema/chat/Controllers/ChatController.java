@@ -3,6 +3,7 @@ package com.sistema.chat.Controllers;
 
 import com.sistema.chat.Modulo.ChatMessage;
 import com.sistema.chat.Service.ChatMessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
-
+@Slf4j
 @RestController
 public class ChatController {
 
@@ -63,6 +64,8 @@ public class ChatController {
             String salaVieja = (String) atributos.get("sala");
             if (salaVieja != null) {
                 chatMessageServicee.salirDeSala(salaVieja);
+                log.info("Se salió de la sala antigua");
+
             }
             atributos.put("sala", chatMessage.getRoom());
             chatMessageServicee.unirseASala(chatMessage.getRoom());
