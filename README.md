@@ -14,7 +14,7 @@ A real-time messaging system focused on high concurrency, dynamic room managemen
 
 ## Tech Stack
 
-* **Backend:** Java 21, Spring Boot (WebSocket, STOMP, REST API), Lombok, SLF4J / Logback.
+* **Backend:** Java 25, Spring Boot (WebSocket, STOMP, REST API), Lombok, SLF4J / Logback.
 * **Frontend:** JavaScript (SockJS-client, StompJS), HTML5, CSS3.
 * **Tools:** Git, Maven.
 
@@ -32,8 +32,8 @@ To ensure server stability under concurrent requests when multiple users join or
 ## How to Run Locally
 
 ### Prerequisites
-* Java 21 installed.
-* Maven 3.x.
+* Java 25 installed.
+* Maven 3.9 + intalled.
 
 ### Steps
 
